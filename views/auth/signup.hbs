@@ -1,0 +1,51 @@
+<h1>Signup page</h1>
+
+<form method="POST" action="/auth/signup">
+  <br />
+  <label>Name
+    <input
+      type="text"
+      name="name"
+      placeholder="Please write your name"
+      value="{{name}}"
+    /></label>
+
+  <br />
+  <br />
+  <label>Email
+    <input
+      type="text"
+      name="email"
+      placeholder="Write your email"
+      value="{{email}}"
+    />
+  </label>
+  <br />
+  <br />
+  <label>Password (min 8 characters)
+    <input
+      type="password"
+      name="password"
+      placeholder="Write your super fancy password"
+    />
+  </label>
+  <br />
+  <br />
+  <label>Location
+    <input
+      type="text"
+      name="location"
+      placeholder="Send me your location"
+      value="{{location}}"
+    />
+  </label>
+
+  <br />
+  <br />
+
+  <button type="submit">Sign up</button>
+</form>
+
+{{#if errorMessage}}
+  <p style="color:red">{{errorMessage}}</p>
+{{/if}}
