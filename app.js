@@ -26,6 +26,7 @@ const capitalized = (string) =>
 app.locals.title = `${capitalized(projectName)}- Generated with Ironlauncher`;
 
 app.get("/", (req, res) => {
+  console.log(req.session);
   res.render("home-page");
 });
 

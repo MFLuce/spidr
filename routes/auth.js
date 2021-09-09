@@ -71,6 +71,7 @@ router.post("/signup", (req, res) => {
         password: hashThePassword,
       })
         .then((createdUser) => {
+          req.session.user = createdUser;
           res.redirect("/");
         })
         .catch((err) => {
@@ -92,6 +93,35 @@ router.post("/signup", (req, res) => {
 
 router.get("/login", (req, res) => {
   res.render("auth/login");
+});
+
+router.post("/login", (req, res) => {
+  const { email, password } = req.body; //
+
+  // nothing written
+  if (!email) {
+    res.render("auth/login", {
+      errorMessage: "Hey, did you forget to put your email?",
+    });
+    return;
+  }
+  // no user with this email in db
+  User.findOne({ email }).then((foundUser) => {
+    if (!foundUser) {
+      res.render("auth/login", { errorMessage: "Wrong credentials" });
+      return;
+    }
+
+    // wrong password
+    const isValidPassword = bcrypt.compareSync(password, foundUser.password);
+
+    if (!isValidPassword) {
+      res.render("auth/login", { errorMessage: "Wrong credentials" });
+      return;
+    }
+    req.session.user = foundUser;
+    res.redirect("/");
+  });
 });
 
 module.exports = router;
