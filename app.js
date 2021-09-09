@@ -1,29 +1,39 @@
-const express = require("express");
+// ℹ️ Gets access to environment variables/settings
+// https://www.npmjs.com/package/dotenv
+require("dotenv/config");
+
+// ℹ️ Connects to the database
 require("./db");
+
+// Handles http requests (express is node js framework)
+// https://www.npmjs.com/package/express
+const express = require("express");
+
+// Handles the handlebars
+// https://www.npmjs.com/package/hbs
+const hbs = require("hbs");
+
 const app = express();
-require("./config")(app); // everything that is application configuration - look here
+
+// ℹ️ This function is getting exported from the config folder. It runs most middlewares
+require("./config")(app);
+
+// default value for title local
+const projectName = "spidr";
+const capitalized = (string) =>
+  string[0].toUpperCase() + string.slice(1).toLowerCase();
+
+app.locals.title = `${capitalized(projectName)}- Generated with Ironlauncher`;
 
 app.get("/", (req, res) => {
   res.render("home-page");
 });
 
-// we ecommerce
-// products
-// get PRODUCTS
-// get PRODUCTS/:id
-// get PRODUCTS/:id/edit
-// POST PRODUCTS/new
-
-// authentication
-// GET Login
-// GET SIGNUP
-// GET LOGOUT
-const PORT = process.env.PORT;
-
 const authRouter = require("./routes/auth");
 
 app.use("/auth", authRouter);
 
-app.listen(PORT, () => {
-  console.log(`Server Listening on Port ${PORT}`);
-});
+// ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
+require("./error-handling")(app);
+
+module.exports = app;
