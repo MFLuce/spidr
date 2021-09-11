@@ -38,21 +38,21 @@ date: Date!
 
 
 GET 	/ Home Page  ✅
-GET		/ Signup
-POST	/ Signup
+GET		/ Signup ✅
+POST	/ Signup ✅
 GET		/ Login ✅
-POST	/ Login
-GET		/ Logout
+POST	/ Login ✅
+GET		/ Logout ✅
+GET		/ see-posts
+POST	/ add-post
 GET 	/ Profiles
 GET 	/ Profiles/:dynamic-id
 GET		/ my-profile
 POST	/ update-profile
 POST	/ update-password
 POST	/ delete-account
-POST	/ add-image
-GET		/ map-view
-GET		/ see-posts
-POST	/ add-post
 POST	/ add-comment
 GET		/ one-sec 
+POST	/ add-image
+GET		/ map-view
 

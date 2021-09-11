@@ -23,11 +23,24 @@ const projectName = "spidr";
 const capitalized = (string) =>
   string[0].toUpperCase() + string.slice(1).toLowerCase();
 
-app.locals.title = `${capitalized(projectName)}- Generated with Ironlauncher`;
+app.locals.title = `${capitalized(projectName)} - Generated with Ironlauncher`;
+
+// app.use((req, res, next) => {
+//   // req -> REQUEST OBJECT
+//   // res -> RESPONSE OBJECT
+//   // next -> Function
+//   req.gato = "Un gatito";
+//   console.log(req.session);
+//   req.user = req.session.user;
+//   next();
+// });
 
 app.get("/", (req, res) => {
-  console.log(req.session);
-  res.render("home-page");
+  if (req.session.user) {
+    res.render("home-page", { user: req.session.user });
+  } else {
+    res.render("home-page");
+  }
 });
 
 const authRouter = require("./routes/auth");

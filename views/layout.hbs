@@ -8,8 +8,17 @@
   <body>
     <nav>
       <a href="/">Home</a>
-      <a href="/auth/signup">Sign Up</a>
-      <a href="/auth/login">Log In</a>
+      {{#if user}}
+        <p>
+          Hello
+          {{user.name}}
+          <br />
+          <a href="/auth/logout">Logout</a>
+        </p>
+      {{else}}
+        <a href="/auth/signup">Sign Up</a>
+        <a href="/auth/login">Log In</a>
+      {{/if}}
     </nav>
     <h1>Welcome to Spidr</h1>
 

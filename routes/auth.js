@@ -1,8 +1,19 @@
 const router = require("express").Router();
 const User = require("../models/User.model");
 const bcrypt = require("bcrypt");
+const isNotLoggedIn = require("../middleware/isNotLoggedIn");
+const isLoggedIn = require("../middleware/isLoggedIn");
 
-router.get("/signup", (req, res) => {
+// router.use((req, res, next) => {
+//   if (req.session.user) {
+//     // user is loggedin
+//     return res.redirect("/");
+//   }
+//   next();
+//   // waiting for a response
+// });
+
+router.get("/signup", isNotLoggedIn, (req, res) => {
   res.render("auth/signup");
 });
 
@@ -10,14 +21,14 @@ router.get("/signup", (req, res) => {
 // req.params -> /users/marie /users/anna /users/juan -> :username {username: marie}| {username: "anna"} | {username:"juan"}
 // req.body -> is what a post request sends
 // form input:name=name input:name=password input:name=email {name:whateverwasinsidethefirstinput, password:whateverwasthepassword, email:whateverwastheemail}
-router.post("/signup", (req, res) => {
-  const { email, password, name, location } = req.body;
+router.post("/signup", isNotLoggedIn, (req, res) => {
+  const { email, password, name, location } = req.body; //
 
   // if any of those inputs is blank it should fail
   if (!email || !name || !location) {
     res.render("auth/signup", {
       errorMessage: "Yo, one of these is not filled in: name, email, location",
-      ...req.body,
+      ...req.body, // spread
     });
     return;
   }
@@ -47,6 +58,7 @@ router.post("/signup", (req, res) => {
 
   User.findOne({ email })
     .then((foundUser) => {
+      // {user} || null
       if (foundUser) {
         res.render("auth/signup", {
           errorMessage:
@@ -71,7 +83,7 @@ router.post("/signup", (req, res) => {
         password: hashThePassword,
       })
         .then((createdUser) => {
-          req.session.user = createdUser;
+          req.session.user = createdUser; // stateful information
           res.redirect("/");
         })
         .catch((err) => {
@@ -91,11 +103,11 @@ router.post("/signup", (req, res) => {
     });
 });
 
-router.get("/login", (req, res) => {
+router.get("/login", isNotLoggedIn, (req, res) => {
   res.render("auth/login");
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", isNotLoggedIn, (req, res) => {
   const { email, password } = req.body; //
 
   // nothing written
@@ -107,6 +119,7 @@ router.post("/login", (req, res) => {
   }
   // no user with this email in db
   User.findOne({ email }).then((foundUser) => {
+    // {user} || null
     if (!foundUser) {
       res.render("auth/login", { errorMessage: "Wrong credentials" });
       return;
@@ -120,6 +133,15 @@ router.post("/login", (req, res) => {
       return;
     }
     req.session.user = foundUser;
+    res.redirect("/");
+  });
+});
+
+router.get("/logout", isLoggedIn, (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("err:", err);
+    }
     res.redirect("/");
   });
 });
