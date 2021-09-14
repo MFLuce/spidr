@@ -4,15 +4,6 @@ const bcrypt = require("bcrypt");
 const isNotLoggedIn = require("../middleware/isNotLoggedIn");
 const isLoggedIn = require("../middleware/isLoggedIn");
 
-// router.use((req, res, next) => {
-//   if (req.session.user) {
-//     // user is loggedin
-//     return res.redirect("/");
-//   }
-//   next();
-//   // waiting for a response
-// });
-
 router.get("/signup", isNotLoggedIn, (req, res) => {
   res.render("auth/signup");
 });

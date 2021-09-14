@@ -43,16 +43,16 @@ POST	/ Signup ✅
 GET		/ Login ✅
 POST	/ Login ✅
 GET		/ Logout ✅
+POST	/ update-profile ✅
+POST	/ update-password ✅
+POST	/ delete-account
 GET		/ see-posts
 POST	/ add-post
-GET 	/ Profiles
-GET 	/ Profiles/:dynamic-id
 GET		/ my-profile
-POST	/ update-profile
-POST	/ update-password
-POST	/ delete-account
+GET 	/ Profiles/:dynamic-id
+GET 	/ Profiles
 POST	/ add-comment
-GET		/ one-sec 
 POST	/ add-image
+GET		/ one-sec 
 GET		/ map-view
 
