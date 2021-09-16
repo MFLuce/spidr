@@ -1,10 +1,13 @@
 const router = require("express").Router();
 const isLoggedInMiddleware = require("../middleware/isLoggedIn");
 const User = require("../models/User.model");
+const Post = require("../models/Post.model");
 const bcrypt = require("bcrypt");
 
 router.get("/", isLoggedInMiddleware, (req, res) => {
-  res.render("profile/home");
+  Post.find({ user: req.session.user._id }).then((allPosts) => {
+    res.render("profile/home", { allPosts });
+  });
 });
 
 router.get("/update-profile", isLoggedInMiddleware, (req, res) => {

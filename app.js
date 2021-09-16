@@ -45,9 +45,12 @@ app.get("/", (req, res) => {
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile.router");
+const postsRouter = require("./routes/posts.router");
 
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
+app.use("/posts", postsRouter);
+// app.use("/posts", require("./routes/posts.router"));
 // app.use is for middlewares
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes

@@ -6,9 +6,17 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    user: String, // this will eventually change
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }, // this will eventually change
     title: String,
-    hashtag: String, // this will also change
+    hashtag: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Hashtag",
+      },
+    ], // this will also change
   },
   {
     timestamps: true,

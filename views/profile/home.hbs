@@ -5,3 +5,17 @@
   <br />
   <a href="/profile/delete-account">Delete your account foo</a>
 </div>
+
+<div>
+  <a href="/posts/create">
+    Create a post
+  </a>
+</div>
+
+<hr />
+
+{{#each allPosts}}
+  <a href="/posts/{{this._id}}">{{this.text}}</a>
+  <br />
+
+{{/each}}

@@ -12,7 +12,7 @@ router.get("/signup", isNotLoggedIn, (req, res) => {
 // req.params -> /users/marie /users/anna /users/juan -> :username {username: marie}| {username: "anna"} | {username:"juan"}
 // req.body -> is what a post request sends
 // form input:name=name input:name=password input:name=email {name:whateverwasinsidethefirstinput, password:whateverwasthepassword, email:whateverwastheemail}
-router.post("/signup", isNotLoggedIn, (req, res) => {
+router.post("/signup", isNotLoggedIn, (req, res, next) => {
   const { email, password, name, location } = req.body; //
 
   // if any of those inputs is blank it should fail
@@ -77,8 +77,8 @@ router.post("/signup", isNotLoggedIn, (req, res) => {
           req.session.user = createdUser; // stateful information
           res.redirect("/");
         })
-        .catch((err) => {
-          console.error(err);
+        .catch((ohlalalaBanana) => {
+          console.error(ohlalalaBanana);
           res.render("auth/signup", {
             errorMessage: "'Dont know', Velarde, A",
             ...req.body,
@@ -108,6 +108,7 @@ router.post("/login", isNotLoggedIn, (req, res) => {
     });
     return;
   }
+
   // no user with this email in db
   User.findOne({ email }).then((foundUser) => {
     // {user} || null

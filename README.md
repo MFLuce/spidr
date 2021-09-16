@@ -1,4 +1,4 @@
-Spidr
+t stSpidr
 
 3 things for each data property:
 Is it required?
@@ -45,10 +45,10 @@ POST	/ Login ✅
 GET		/ Logout ✅
 POST	/ update-profile ✅
 POST	/ update-password ✅
-POST	/ delete-account
+POST	/ delete-account ✅
+GET		/ profile
 GET		/ see-posts
 POST	/ add-post
-GET		/ my-profile
 GET 	/ Profiles/:dynamic-id
 GET 	/ Profiles
 POST	/ add-comment
