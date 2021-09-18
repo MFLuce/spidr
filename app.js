@@ -25,22 +25,20 @@ const capitalized = (string) =>
 
 app.locals.title = `${capitalized(projectName)} - Generated with Ironlauncher`;
 
-// app.use((req, res, next) => {
-//   // req -> REQUEST OBJECT
-//   // res -> RESPONSE OBJECT
-//   // next -> Function
-//   req.gato = "Un gatito";
-//   console.log(req.session);
-//   req.user = req.session.user;
-//   next();
-// });
-
-app.get("/", (req, res) => {
+app.use((req, res, next) => {
   if (req.session.user) {
-    res.render("home-page", { user: req.session.user });
-  } else {
-    res.render("home-page");
+    res.locals.user = req.session.user;
   }
+  next();
+});
+
+// Home Page Handler
+app.get("/", (req, res) => {
+  // if (req.session.user) {
+  //   res.render("home-page", { user: req.session.user });
+  // } else {
+  res.render("home-page");
+  // }
 });
 
 const authRouter = require("./routes/auth");

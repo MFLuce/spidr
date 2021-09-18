@@ -46,9 +46,10 @@ GET		/ Logout ✅
 POST	/ update-profile ✅
 POST	/ update-password ✅
 POST	/ delete-account ✅
-GET		/ profile
-GET		/ see-posts
-POST	/ add-post
+GET		/ profile ✅
+GET		/ see-posts ✅
+POST	/ add-post ✅
+POST 	/ edit-post
 GET 	/ Profiles/:dynamic-id
 GET 	/ Profiles
 POST	/ add-comment

@@ -8,3 +8,9 @@
 </h3>
 
 {{post.text}}
+
+{{#if isAuthor}}
+  <div>
+    <a href="/posts/{{post._id}}/edit">Edit this post</a>
+  </div>
+{{/if}}

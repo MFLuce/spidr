@@ -15,7 +15,6 @@ router.get("/update-profile", isLoggedInMiddleware, (req, res) => {
     name: req.session.user.name,
     location: req.session.user.location,
     email: req.session.user.email,
-    user: req.session.user,
   });
 });
 
