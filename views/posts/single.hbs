@@ -3,7 +3,11 @@
 {{/if}}
 <h3>
   by
+  {{#if post.author}}
   {{post.author.name}}
+  {{else}}
+  author no longer among us 💀
+  {{/if}}
 </h3>
 
 {{post.text}}
@@ -18,7 +22,14 @@
   <section class="comments">
     <p>Comments: 👇</p>
     {{#each post.comments}}
-      <p>{{this.text}}</p>
+      <div style="font-size: .8rem; margin: 0">by: {{this.author.name}}</div>
+      <p style="margin: 1rem">{{this.text}}</p>
+      {{#if this.isAuthor}}
+        <a
+          href="/comments/{{../post._id}}/{{this._id}}/delete"
+          style="color: red"
+        >Delete your comment</a>
+      {{/if}}
     {{/each}}
 
   </section>

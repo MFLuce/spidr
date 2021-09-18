@@ -24,4 +24,29 @@ router.post("/:postId/new", isLoggedInMiddleware, (req, res) => {
   });
 });
 
+router.get("/:postId/:commentId/delete", (req, res) => {
+  Post.findById(req.params.postId).then((singlePost) => {
+    if (!singlePost) {
+      return goHomeYoureDrunk(res);
+    }
+
+    Comment.findById(req.params.commentId).then((singleComment) => {
+      if (!singleComment) {
+        return goHomeYoureDrunk(res);
+      }
+      if (!compareIds(singleComment.author, req.session.user._id)) {
+        return res.redirect(`/posts/${singlePost._id}`);
+      }
+
+      Comment.findByIdAndDelete(singleComment._id).then(() => {
+        Post.findByIdAndUpdate(singlePost._id, {
+          $pull: { comments: singleComment._id },
+        }).then(() => {
+          res.redirect(`/posts/${singlePost._id}`);
+        });
+      });
+    });
+  });
+});
+
 module.exports = router;

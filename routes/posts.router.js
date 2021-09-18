@@ -10,28 +10,55 @@ router.get("/create", isLoggedInMiddleware, (req, res) => {
 
 function dynamicPostMiddleware(req, res, next) {
   Post.findById(req.params.id)
-    .populate("author comments")
+    .populate([
+      { path: "author" }, // post.author
+      {
+        path: "comments", // post.comments
+        populate: {
+          path: "author", //post.comments.[author]
+          model: "User",
+        },
+      },
+    ])
+    // .populate({ path: "comments" })
+    // .populate({ path: "author" })
+    // .populate("author")
+    // .populate("comments")
+    // .populate("author comments") // i want the post author, the comment, and, from the comment, the author of the comment
+    // .populate("author comments")
     .then((singlePost) => {
       if (!singlePost) {
         return res.redirect(`/`);
       }
 
       req.post = singlePost;
-      req.mufasaAndSimbaSittingInATree =
-        "THey are not doing anything, because that would be necrophilia and incest together. Just disgusting";
+
       next();
     });
 }
 
 router.get("/:id", dynamicPostMiddleware, (req, res) => {
   let isAuthor = false;
-  console.log(req.mufasaAndSimbaSittingInATree);
   if (req.session.user) {
-    if (compareIds(req.session.user._id, req.post.author._id)) {
+    if (compareIds(req.session.user._id, req.post.author?._id)) {
       isAuthor = true;
     }
   }
-  return res.render("posts/single", { post: req.post, isAuthor });
+
+  const currentPostComments = req.post.comments.map((comment) => {
+    if (req.session.user) {
+      if (compareIds(req.session.user?._id, comment.author?._id)) {
+        return { ...comment.toJSON(), isAuthor: true };
+      }
+    }
+
+    return { ...comment.toJSON() };
+  });
+
+  return res.render("posts/single", {
+    post: { ...req.post.toJSON(), comments: currentPostComments },
+    isAuthor,
+  });
   // Post.findById(req.params.id)
   //   .populate("author")
   //   .then((thePost) => {
@@ -51,7 +78,7 @@ router.get(
   isLoggedInMiddleware,
   dynamicPostMiddleware,
   (req, res) => {
-    if (!compareIds(req.session.user._id, req.post.author._id)) {
+    if (!compareIds(req.session.user._id, req.post?.author?._id)) {
       return res.redirect(`/posts/${req.params.id}`);
     }
     res.render("posts/edit-single-post", { post: req.post });
@@ -78,7 +105,7 @@ router.post(
   (req, res) => {
     const { title, text } = req.body;
 
-    if (!compareIds(req.session.user._id, req.post.author._id)) {
+    if (!compareIds(req.session.user._id, req.post?.author?._id)) {
       return res.redirect(`/posts/${req.post._id}`);
     }
 

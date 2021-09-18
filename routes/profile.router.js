@@ -2,10 +2,11 @@ const router = require("express").Router();
 const isLoggedInMiddleware = require("../middleware/isLoggedIn");
 const User = require("../models/User.model");
 const Post = require("../models/Post.model");
+const Comment = require("../models/Comments.model");
 const bcrypt = require("bcrypt");
 
 router.get("/", isLoggedInMiddleware, (req, res) => {
-  Post.find({ user: req.session.user._id }).then((allPosts) => {
+  Post.find({ author: req.session.user._id }).then((allPosts) => {
     res.render("profile/home", { allPosts });
   });
 });
@@ -91,6 +92,8 @@ router.post("/update-password", isLoggedInMiddleware, (req, res) => {
 //
 
 router.get("/delete-account", isLoggedInMiddleware, (req, res) => {
+  // Delete All Comments From User
+
   User.findByIdAndDelete(req.session.user._id).then(() => {
     req.session.destroy((err) => {
       if (err) {
