@@ -17,6 +17,12 @@ const postSchema = new mongoose.Schema(
         ref: "Hashtag",
       },
     ], // this will also change
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
   },
   {
     timestamps: true,

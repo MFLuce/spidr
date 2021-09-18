@@ -6,8 +6,10 @@ const commentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    user: String, // this will eventually change
-    post: String, //this will change
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }, // this will eventually change
   },
   {
     timestamps: true,

@@ -10,7 +10,7 @@ router.get("/create", isLoggedInMiddleware, (req, res) => {
 
 function dynamicPostMiddleware(req, res, next) {
   Post.findById(req.params.id)
-    .populate("author")
+    .populate("author comments")
     .then((singlePost) => {
       if (!singlePost) {
         return res.redirect(`/`);

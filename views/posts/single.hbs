@@ -2,7 +2,6 @@
   <h1>{{post.title}}</h1>
 {{/if}}
 <h3>
-
   by
   {{post.author.name}}
 </h3>
@@ -14,3 +13,21 @@
     <a href="/posts/{{post._id}}/edit">Edit this post</a>
   </div>
 {{/if}}
+
+{{#if post.comments}}
+  <section class="comments">
+    <p>Comments: 👇</p>
+    {{#each post.comments}}
+      <p>{{this.text}}</p>
+    {{/each}}
+
+  </section>
+{{/if}}
+<form method="POST" action="/comments/{{post._id}}/new">
+
+  <h2>Add a new comment</h2>
+  <label>
+    <input type="text" placeholder="Write your comment" name="text" />
+  </label>
+  <button type="submit">Write comment</button>
+</form>
