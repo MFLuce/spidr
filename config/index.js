@@ -42,13 +42,17 @@ module.exports = (app) => {
     favicon(path.join(__dirname, "..", "public", "images", "favicon.ico"))
   );
 
+  const MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost/spidr";
+
   app.use(
     session({
-      secret: "sakdjfhsadkjfhdsakjfhdsakjfhsadkjfhdsakjha",
+      secret:
+        process.env.SESSION_SECRET ||
+        "sakdjfhsadkjfhdsakjfhdsakjfhsadkjfhdsakjha",
       resave: false,
       saveUninitialized: true,
       store: MongoStore.create({
-        mongoUrl: "mongodb://localhost/spidr",
+        mongoUrl: MONGO_URI,
       }),
     })
   );
