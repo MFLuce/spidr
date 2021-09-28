@@ -91,16 +91,22 @@ router.post("/update-password", isLoggedInMiddleware, (req, res) => {
 // first check if the old is the same as the one in the db
 //
 
-router.get("/delete-account", isLoggedInMiddleware, (req, res) => {
-  // Delete All Comments From User
+router.get("/delete-account", isLoggedInMiddleware, async (req, res) => {
+  const userId = req.session.user._id;
 
-  User.findByIdAndDelete(req.session.user._id).then(() => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("err:", err);
-      }
-      res.redirect("/");
-    });
+  await User.findByIdAndDelete(userId);
+  await Comment.deleteMany({ user: userId });
+  const arrOfPostsFromUser = await Post.find({ author: userId });
+  const getPostIds = arrOfPostsFromUser.map((e) => e._id);
+  await Comment.deleteMany({ post: { $in: getPostIds } });
+  await Post.deleteMany({ _id: { $in: getPostIds } });
+
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("err: ", err);
+    }
+
+    res.redirect("/profile");
   });
 });
 

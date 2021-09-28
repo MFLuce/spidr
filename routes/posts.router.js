@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const isLoggedInMiddleware = require("../middleware/isLoggedIn");
+const Comment = require("../models/Comments.model");
 const Post = require("../models/Post.model");
 const User = require("../models/User.model");
 const compareIds = require("../utils/compareIds");
@@ -12,13 +13,6 @@ function dynamicPostMiddleware(req, res, next) {
   Post.findById(req.params.id)
     .populate([
       { path: "author" }, // post.author
-      {
-        path: "comments", // post.comments
-        populate: {
-          path: "author", //post.comments.[author]
-          model: "User",
-        },
-      },
     ])
     // .populate({ path: "comments" })
     // .populate({ path: "author" })
@@ -37,26 +31,36 @@ function dynamicPostMiddleware(req, res, next) {
     });
 }
 
-router.get("/:id", dynamicPostMiddleware, (req, res) => {
+router.get("/:id", dynamicPostMiddleware, async (req, res) => {
   let isAuthor = false;
   if (req.session.user) {
     if (compareIds(req.session.user._id, req.post.author?._id)) {
       isAuthor = true;
     }
   }
+  const allComments = await Comment.find({ post: req.post._id });
 
-  const currentPostComments = req.post.comments.map((comment) => {
+  const allCommentsByUser = allComments.map((comment) => {
     if (req.session.user) {
       if (compareIds(req.session.user?._id, comment.author?._id)) {
         return { ...comment.toJSON(), isAuthor: true };
       }
     }
-
     return { ...comment.toJSON() };
   });
 
+  // const currentPostComments = req.post.comments.map((comment) => {
+  //   if (req.session.user) {
+  //     if (compareIds(req.session.user?._id, comment.author?._id)) {
+  //       return { ...comment.toJSON(), isAuthor: true };
+  //     }
+  //   }
+
+  //   return { ...comment.toJSON() };
+  // });
+
   return res.render("posts/single", {
-    post: { ...req.post.toJSON(), comments: currentPostComments },
+    post: { ...req.post.toJSON(), comments: allCommentsByUser },
     isAuthor,
   });
   // Post.findById(req.params.id)
@@ -140,5 +144,22 @@ router.post("/create", isLoggedInMiddleware, (req, res) => {
     }
   );
 });
+
+router.get(
+  "/:id/delete",
+  isLoggedInMiddleware,
+  dynamicPostMiddleware,
+  async (req, res) => {
+    const isAuthor = compareIds(req.session.user._id, req.post.author._id);
+
+    if (!isAuthor) {
+      return res.redirect(`/posts/${req.params.id}`);
+    }
+
+    await Comment.deleteMany({ post: { $in: [req.post._id] } });
+
+    res.redirect("/");
+  }
+);
 
 module.exports = router;

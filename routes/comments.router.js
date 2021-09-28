@@ -12,13 +12,9 @@ router.post("/:postId/new", isLoggedInMiddleware, (req, res) => {
     }
 
     const { text } = req.body;
-    Comment.create({ text, author: req.session.user._id }).then(
-      (createdComment) => {
-        Post.findByIdAndUpdate(post._id, {
-          $addToSet: { comments: createdComment._id },
-        }).then(() => {
-          res.redirect(`/posts/${post._id}`);
-        });
+    Comment.create({ text, author: req.session.user._id, post: post._id }).then(
+      () => {
+        res.redirect(`/posts/${post._id}`);
       }
     );
   });
@@ -39,11 +35,7 @@ router.get("/:postId/:commentId/delete", (req, res) => {
       }
 
       Comment.findByIdAndDelete(singleComment._id).then(() => {
-        Post.findByIdAndUpdate(singlePost._id, {
-          $pull: { comments: singleComment._id },
-        }).then(() => {
-          res.redirect(`/posts/${singlePost._id}`);
-        });
+        res.redirect(`/posts/${singlePost._id}`);
       });
     });
   });

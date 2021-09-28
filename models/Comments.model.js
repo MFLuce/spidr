@@ -9,7 +9,11 @@ const commentSchema = new mongoose.Schema(
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    }, // this will eventually change
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+    },
   },
   {
     timestamps: true,
