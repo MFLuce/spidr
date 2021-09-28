@@ -96,10 +96,12 @@ router.get("/delete-account", isLoggedInMiddleware, async (req, res) => {
 
   await User.findByIdAndDelete(userId);
   await Comment.deleteMany({ user: userId });
+  // await Promise.all([User.findByIdAndDelete(userId), Comment.deleteMany({ user: userId })])
   const arrOfPostsFromUser = await Post.find({ author: userId });
   const getPostIds = arrOfPostsFromUser.map((e) => e._id);
   await Comment.deleteMany({ post: { $in: getPostIds } });
   await Post.deleteMany({ _id: { $in: getPostIds } });
+  // await Promise.all([Comment.deleteMany({ post: { $in: getPostIds } }, ), Post.deleteMany({ _id: { $in: getPostIds } })])
 
   req.session.destroy((err) => {
     if (err) {
