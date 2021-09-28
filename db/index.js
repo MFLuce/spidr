@@ -19,4 +19,6 @@ mongoose
     console.error("Error connecting to mongo: ", err);
   });
 
-mongoose.set("debug", true);
+if (process.env.NODE_ENV !== "production") {
+  mongoose.set("debug", true);
+}
