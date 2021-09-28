@@ -12,7 +12,7 @@ router.get("/signup", isNotLoggedIn, (req, res) => {
 // req.params -> /users/marie /users/anna /users/juan -> :username {username: marie}| {username: "anna"} | {username:"juan"}
 // req.body -> is what a post request sends
 // form input:name=name input:name=password input:name=email {name:whateverwasinsidethefirstinput, password:whateverwasthepassword, email:whateverwastheemail}
-router.post("/signup", isNotLoggedIn, (req, res, next) => {
+router.post("/signup", isNotLoggedIn, async (req, res, next) => {
   const { email, password, name, location } = req.body; //
 
   // if any of those inputs is blank it should fail
@@ -47,58 +47,63 @@ router.post("/signup", isNotLoggedIn, (req, res, next) => {
   // IF WE ARE HERE, WE ARE SURE THAT WE JUST NEED TO DO ONE LAST CHECK: IS THERE A USER WITH THIS EMAIL
   // if they're already signed up, or if that email is already taken
 
-  User.findOne({ email })
-    .then((foundUser) => {
-      // {user} || null
-      if (foundUser) {
-        res.render("auth/signup", {
-          errorMessage:
-            "Pablo was 'thinking'. Sure... Catchy, like a funny thing",
-          ...req.body,
-        });
-        return;
-      }
-
-      // first, we tell bcrypt how to create the destroyer logic: in bcrypt thats called salt rounds
-      const saltRounds = 10;
-      // then we generate the salt
-      const theSaltIsGenerated = bcrypt.genSaltSync(saltRounds);
-      // then, we hash the password
-
-      const hashThePassword = bcrypt.hashSync(password, theSaltIsGenerated);
-
-      User.create({
-        name,
-        location,
-        email,
-        password: hashThePassword,
-      })
-        .then((createdUser) => {
-          req.session.user = createdUser; // stateful information
-          res.redirect("/");
-        })
-        .catch((ohlalalaBanana) => {
-          console.error(ohlalalaBanana);
-          res.render("auth/signup", {
-            errorMessage: "'Dont know', Velarde, A",
-            ...req.body,
-          });
-        });
-    })
-    .catch((err) => {
-      console.error(err);
+  try {
+    const foundUser = await User.findOne({ email });
+    // {user} || null
+    if (foundUser) {
       res.render("auth/signup", {
-        errorMessage: "'Dont know', Velarde, A",
+        errorMessage:
+          "Pablo was 'thinking'. Sure... Catchy, like a funny thing",
         ...req.body,
       });
+      return;
+    }
+
+    // first, we tell bcrypt how to create the destroyer logic: in bcrypt thats called salt rounds
+    const saltRounds = 10;
+    // then we generate the salt
+    const theSaltIsGenerated = bcrypt.genSaltSync(saltRounds);
+    // then, we hash the password
+
+    const hashThePassword = bcrypt.hashSync(password, theSaltIsGenerated);
+
+    const createdUser = await User.create({
+      name,
+      location,
+      email,
+      password: hashThePassword,
     });
+
+    req.session.user = createdUser; // stateful information
+    res.redirect("/");
+  } catch (err) {
+    console.error(err);
+    res.render("auth/signup", {
+      errorMessage: "'Dont know', Velarde, A",
+      ...req.body,
+    });
+  }
+
+  // .catch((ohlalalaBanana) => {
+  //   console.error(ohlalalaBanana);
+  //   res.render("auth/signup", {
+  //     errorMessage: "'Dont know', Velarde, A",
+  //     ...req.body,
+  //   });
+  // });
+  // .catch((err) => {
+  //   res.render("auth/signup", {
+  //     errorMessage: "'Dont know', Velarde, A",
+  //     ...req.body,
+  //   });
+  // });
 });
 
 router.get("/login", isNotLoggedIn, (req, res) => {
   res.render("auth/login");
 });
 
-router.post("/login", isNotLoggedIn, (req, res) => {
+router.post("/login", isNotLoggedIn, async (req, res) => {
   const { email, password } = req.body; //
 
   // nothing written
@@ -109,24 +114,24 @@ router.post("/login", isNotLoggedIn, (req, res) => {
     return;
   }
 
+  const foundUser = await User.findOne({ email });
+
   // no user with this email in db
-  User.findOne({ email }).then((foundUser) => {
-    // {user} || null
-    if (!foundUser) {
-      res.render("auth/login", { errorMessage: "Wrong credentials" });
-      return;
-    }
+  // {user} || null
+  if (!foundUser) {
+    res.render("auth/login", { errorMessage: "Wrong credentials" });
+    return;
+  }
 
-    // wrong password
-    const isValidPassword = bcrypt.compareSync(password, foundUser.password);
+  // wrong password
+  const isValidPassword = bcrypt.compareSync(password, foundUser.password);
 
-    if (!isValidPassword) {
-      res.render("auth/login", { errorMessage: "Wrong credentials" });
-      return;
-    }
-    req.session.user = foundUser;
-    res.redirect("/");
-  });
+  if (!isValidPassword) {
+    res.render("auth/login", { errorMessage: "Wrong credentials" });
+    return;
+  }
+  req.session.user = foundUser;
+  res.redirect("/");
 });
 
 router.get("/logout", isLoggedIn, (req, res) => {
