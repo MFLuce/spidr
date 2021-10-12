@@ -157,6 +157,7 @@ router.get(
     }
 
     await Comment.deleteMany({ post: { $in: [req.post._id] } });
+    await Post.findByIdAndDelete(req.post._id);
 
     res.redirect("/");
   }
